@@ -1,0 +1,43 @@
+[
+  {
+    "set": {
+      "field": "nerc.ingest.parse.selected",
+      "value": "catchall"
+    }
+  },
+  {
+    "grok": {
+      "field": "message",
+      "patterns": [
+        "%{SYSLOGTIMESTAMP:nerc.syslog.timestamp} %{SYSLOGHOST:nerc.syslog.hostname} %{DATA:process.name}(?:\\[%{POSINT:process.pid:long}\\])?: %{GREEDYMULTILINE:nerc.syslog.message}",
+        "%{TIMESTAMP_ISO8601:nerc.syslog.timestamp} %{SYSLOGHOST:nerc.syslog.hostname} %{DATA:nerc.syslog.process.name}(?:\\[%{POSINT:nerc.syslog.process.pid:long}\\])?: %{GREEDYMULTILINE:nerc.syslog.message}",
+        "%{SYSLOGTIMESTAMP:nerc.syslog.timestamp} %{GREEDYMULTILINE:nerc.syslog.message}",
+        "%{TIMESTAMP_ISO8601:nerc.syslog.timestamp} %{GREEDYMULTILINE:nerc.syslog.message}"
+      ],
+      "pattern_definitions": {
+        "GREEDYMULTILINE": "(.|\n)*"
+      },
+      "trace_match": true,
+      "on_failure": [
+        {
+          "set": {
+            "field": "nerc.ingest.parse.fail",
+            "value": "1"
+          }
+        },
+        {
+          "set": {
+            "field": "nerc.ingest.parse.error",
+            "value": "{{ _ingest.on_failure_message }}"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "set": {
+      "field": "nerc.ingest.parse.match",
+      "value": "{{_ingest._grok_match_index}}"
+    }
+  }
+]

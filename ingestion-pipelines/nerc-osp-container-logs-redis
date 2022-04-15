@@ -1,0 +1,32 @@
+[
+  {
+    "set": {
+      "field": "nerc.ingest.parse.selected",
+      "value": "redis",
+      "override": false
+    }
+  },
+  {
+    "grok": {
+      "field": "message",
+      "patterns": [
+        "%{WORD:nerc.testword}"
+      ],
+      "trace_match": true,
+      "on_failure": [
+        {
+          "set": {
+            "field": "nerc.ingest.parse.error",
+            "value": "{{ _ingest.on_failure_message }}"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "set": {
+      "field": "nerc.ingest.parse.match",
+      "value": "{{_ingest._grok_match_index}}"
+    }
+  }
+]

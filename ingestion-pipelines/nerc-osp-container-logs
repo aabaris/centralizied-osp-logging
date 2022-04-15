@@ -1,0 +1,32 @@
+[
+  {
+    "set": {
+      "field": "nerc.ingest.version",
+      "value": "1"
+    }
+  },
+  {
+    "pipeline": {
+      "name": "nerc-osp-container-logs-redis",
+      "if": "ctx.log.file.path == \"/var/log/containers/redis/redis.log\""
+    }
+  },
+  {
+    "pipeline": {
+      "name": "nerc-osp-container-logs-catchall",
+      "if": "ctx.log.file.path != \"/var/log/containers/redis/redis.log\""
+    }
+  },
+  {
+    "set": {
+      "field": "nerc.parser-match",
+      "value": "{{_ingest._grok_match_index}}"
+    }
+  },
+  {
+    "set": {
+      "field": "nerc.debug.main-pipeline-finish",
+      "value": "1"
+    }
+  }
+]
