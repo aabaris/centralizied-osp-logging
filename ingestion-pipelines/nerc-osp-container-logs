@@ -2,7 +2,13 @@
   {
     "set": {
       "field": "nerc.ingest.version",
-      "value": "1"
+      "value": "1.2"
+    }
+  },
+  {
+    "set": {
+      "field": "nerc.ingest.parse.selected",
+      "value": "none"
     }
   },
   {
@@ -13,20 +19,14 @@
   },
   {
     "pipeline": {
+      "name": "nerc-osp-container-logs-neutron-server",
+      "if": "ctx.log.file.path == \"/var/log/containers/neutron/server.log\""
+    }
+  },
+  {
+    "pipeline": {
       "name": "nerc-osp-container-logs-catchall",
-      "if": "ctx.log.file.path != \"/var/log/containers/redis/redis.log\""
-    }
-  },
-  {
-    "set": {
-      "field": "nerc.parser-match",
-      "value": "{{_ingest._grok_match_index}}"
-    }
-  },
-  {
-    "set": {
-      "field": "nerc.debug.main-pipeline-finish",
-      "value": "1"
+      "if": "ctx.nerc.ingest.parse.selected == \"none\""
     }
   }
 ]
